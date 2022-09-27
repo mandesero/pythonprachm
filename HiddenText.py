@@ -1,9 +1,11 @@
 def check_hidden_text(string, template):
-    for j in range(len(string) - len(template)):
-        for i in range(1, len(string) - j):
-            if template in string[j:: i]:
-                return 'YES'
-    return 'NO'
+    if any([letter not in string for letter in template]):
+        return 'NO'
+    start = string.index(template[0])
+    for step in range(1, len(string)):
+        if template in string[start::step]:
+            return "YES"
+    return "NO"
 
 
 def main():
