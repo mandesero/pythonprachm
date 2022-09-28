@@ -5,8 +5,10 @@ def transprose45(arr):
 
 def main():
     arr = []
-    while buf := input():
-        arr.append(eval(buf))
+    buf = input()
+    arr.append(eval(buf))
+    for i in range(len(arr[0]) - 1):
+        arr.append(eval(input()))
     transprose45(arr)
 
 
