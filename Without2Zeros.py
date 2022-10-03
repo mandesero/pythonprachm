@@ -3,3 +3,4 @@ def No_2Zero(n, k):
     for i in range(2, len(t)):
         t[i] = (t[i - 1] + t[i - 2]) * (k - 1)
     return t[-1]
+
