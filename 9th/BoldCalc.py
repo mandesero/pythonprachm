@@ -1,100 +1,76 @@
-class Expression:
+import sys
+
+
+class Calculator:
     vars = {}
 
-    def __init__(self, expr):
-        self.expr = expr.replace(' ', '')
-
-        try:
-            t = self.parse()
-
-            if t != "":
-                print(t)
-
-        except Exception as err:
-            print(err.args[0])
-
-
+    def __init__(self):
+        self.buff = [s.replace(" ", "") for s in sys.stdin.read().split('\n') if not s.startswith('#') and len(s) != 0]
+        self.parse()
 
     def parse(self):
+        for cmd in self.buff:
+            try:
+                if "=" in cmd:
 
-        if self.expr.startswith('#'):
-            return ""
+                    if cmd.count("=") > 1:
+                        raise SyntaxError
 
-        if "=" in self.expr:
-            if self.expr.count("=") > 1:
-                raise SyntaxError("Syntax error")
+                    var, expr = cmd.split('=')
+                    if var.isidentifier():
+                        res = self.execute_expr(expr)
+                        self.vars["_" + var] = res
+                    else:
+                        raise AttributeError
 
-            t = self.expr.split('=')
+                else:
+                    print(self.execute_expr(cmd))
 
-            if t[0].isidentifier():
+            except AttributeError:
+                print("Assignment error")
+            except SyntaxError:
+                print('Syntax error')
+            except TypeError:
+                print('Syntax error')
+            except NameError:
+                print('Name error')
+            except Exception:
+                print('Runtime error')
 
-                res = self.execute_expr(t[1])
-                Expression.vars["_" + t[0]] = res
-                return ""
+    def execute_expr(self, expr):
+        ops = "+-*/%()"
+        if "()" in expr or "**" in expr or "//" in expr or "." in expr:
+            raise SyntaxError
 
-            else:
-                raise SyntaxError("Assignment error")
-
-        else:
-
-            res = self.execute_expr(self.expr)
-            return res
-
-
-    def execute_expr(self, e):
-        ops = ['+', '-', '*', '/', '%', ')', '(']
         start = 0
-        expr = []
-        for i, v in enumerate(e):
+        e = []
+        for i, v in enumerate(expr):
             if v in ops:
-                var = e[start:i]
-                if var.isdigit():
-                    expr.append(var)
-                elif var:
-                    if ("_" + var) in self.vars:
-                        expr.append("_" + var)
-                    elif var.isidentifier():
-                        raise NameError("Name error")
-                    else:
-                        raise SyntaxError("Syntax error")
-                expr.append(v)
+                var = expr[start: i]
+                if var:
+                    if var.isidentifier():
+                        var = "_" + var
+
+                        if v == "(":
+                            raise SyntaxError
+
+                        if var not in self.vars:
+                            raise NameError
+                    elif not var.isdigit():
+                        raise SyntaxError
+
+                    e.append(var)
+                e.append(v)
                 start = i + 1
-            else:
-                var = e[start:]
-                if var.isdigit():
-                    expr.append(var)
-                elif var:
-                    if ("_" + var) in self.vars:
-                        expr.append("_" + var)
-                    elif var.isidentifier():
-                        raise NameError("Name error")
-                    else:
-                        raise SyntaxError("Syntax error")
-
-        try:
-            print(expr)
-            res = eval("".join(expr).replace('/', '//'), Expression.vars)
-
-            return res
-
-        except Exception:
-            raise RuntimeError('Runtime error')
-
-
-
-
-
-
+        else:
+            var = expr[start:]
+            if var:
+                if var.isidentifier():
+                    var = "_" + var
+                e.append(var)
+        res = eval("".join(e).replace('/', '//'), self.vars)
+        return res
 
 
 if __name__ == '__main__':
-    import sys
-
-    s = sys.stdin.read().split('\n')
-    prog = ""
-    for line in s:
-        if line:
-            prog += f"Expression('{line}')\n"
-    exec(prog)
-    # print(Expression.vars.keys())
-    # print(Expression.vars.values())
+    Calculator()
