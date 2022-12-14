@@ -51,7 +51,7 @@ def main():
             if e1 == e2:
                 continue
             try:
-                if pair[0] == e1:
+                if pair[0][0] == e1:
                     continue
 
                 t1 = buff.decode(e1).encode(e2)

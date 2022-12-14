@@ -2,6 +2,7 @@ def seesaw(seq):
     seq = list(seq)
     odd = [i for i in seq if i % 2 != 0]
     even = [i for i in seq if i % 2 == 0]
+    i = -1
     for i in range(min(len(odd), len(even))):
         yield even[i]
         yield odd[i]
